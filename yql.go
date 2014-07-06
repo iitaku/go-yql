@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-var gae_client *http.Client
+var GlobalClient *http.Client
 
 func init() {
 	sql.Register("yql", &YQLDriver{})
@@ -27,8 +27,8 @@ type YQLConn struct {
 }
 
 func (d *YQLDriver) Open(dsn string) (driver.Conn, error) {
-  if gae_client != nil {
-    return &YQLConn{gae_client}, nil
+  if GlobalClient != nil {
+    return &YQLConn{GlobalClient}, nil
   } else {
     return &YQLConn{http.DefaultClient}, nil
   }
