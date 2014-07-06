@@ -3,8 +3,8 @@ package yql
 import (
 	"encoding/json"
 	"errors"
-	"exp/sql"
-	"exp/sql/driver"
+	"database/sql"
+	"database/sql/driver"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -54,7 +54,7 @@ func (s *YQLStmt) NumInput() int {
 	return strings.Count(s.q, "?")
 }
 
-func (s *YQLStmt) bind(args []interface{}) error {
+func (s *YQLStmt) bind(args []driver.Value) error {
 	b := s.q
 	for _, v := range args {
 		b = strings.Replace(b, "?", fmt.Sprintf("%q", v), 1)
@@ -63,7 +63,7 @@ func (s *YQLStmt) bind(args []interface{}) error {
 	return nil
 }
 
-func (s *YQLStmt) Query(args []interface{}) (driver.Rows, error) {
+func (s *YQLStmt) Query(args []driver.Value) (driver.Rows, error) {
 	if err := s.bind(args); err != nil {
 		return nil, err
 	}
@@ -107,7 +107,7 @@ type YQLResult struct {
 	s *YQLStmt
 }
 
-func (s *YQLStmt) Exec(args []interface{}) (driver.Result, error) {
+func (s *YQLStmt) Exec(args []driver.Value) (driver.Result, error) {
 	return nil, errors.New("Exec does not supported")
 }
 
@@ -125,7 +125,7 @@ func (rc *YQLRows) Columns() []string {
 	return []string{"results"}
 }
 
-func (rc *YQLRows) Next(dest []interface{}) error {
+func (rc *YQLRows) Next(dest []driver.Value) error {
 	if rc.n == len(rc.d) {
 		return errors.New("EOF")
 	}
