@@ -1,7 +1,7 @@
 package yql
 
 import (
-	"encoding/json"
+  "encoding/json"
 	"errors"
 	"database/sql"
 	"database/sql/driver"
@@ -11,6 +11,8 @@ import (
 	"net/url"
 	"strings"
 )
+
+var gae_client *http.Client
 
 func init() {
 	sql.Register("yql", &YQLDriver{})
@@ -25,7 +27,11 @@ type YQLConn struct {
 }
 
 func (d *YQLDriver) Open(dsn string) (driver.Conn, error) {
-	return &YQLConn{http.DefaultClient}, nil
+  if gae_client != nil {
+    return &YQLConn{gae_client}, nil
+  } else {
+    return &YQLConn{http.DefaultClient}, nil
+  }
 }
 
 func (c *YQLConn) Close() error {
